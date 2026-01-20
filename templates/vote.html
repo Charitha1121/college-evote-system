@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EvoteX - Vote</title>
+</head>
+<body>
+    <h2>Vote for Your Candidate</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        {% for candidate in candidates %}
+            <input type="radio" name="candidate" value="{{ candidate[0] }}"> 
+            <b>{{ candidate[1] }}</b> - {{ candidate[2] }}<br>
+        {% endfor %}
+        <br>
+        <input type="submit" value="Vote">
+    </form>
+</body>
+</html>

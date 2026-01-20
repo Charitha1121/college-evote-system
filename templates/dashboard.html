@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EvoteX - Dashboard</title>
+</head>
+<body>
+    <h2>Election Dashboard</h2>
+
+    <p>Total Students: {{ total_students }}</p>
+    <p>Total Voted: {{ total_voted }}</p>
+    <p>Participation Rate: {{ participation }}%</p>
+
+    {% if candidates %}
+        <h3>Candidate Votes</h3>
+        <ul>
+        {% for c in candidates %}
+            <li>{{ c[0] }} : {{ c[1] }} votes</li>
+        {% endfor %}
+        </ul>
+        {% if chart_path %}
+            <img src="{{ url_for('static', filename='results.png') }}" alt="Election Chart">
+        {% endif %}
+    {% else %}
+        <p>No candidates approved yet.</p>
+    {% endif %}
+</body>
+</html>

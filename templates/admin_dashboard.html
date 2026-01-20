@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EvoteX - Admin Dashboard</title>
+</head>
+<body>
+    <h2>Pending Candidate Approvals</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if pending_candidates %}
+        <table border="1">
+            <tr>
+                <th>Name</th>
+                <th>Roll</th>
+                <th>Manifesto</th>
+                <th>Action</th>
+            </tr>
+            {% for c in pending_candidates %}
+            <tr>
+                <td>{{ c[1] }}</td>
+                <td>{{ c[2] }}</td>
+                <td>{{ c[3] }}</td>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" name="candidate_id" value="{{ c[0] }}">
+                        <button type="submit" name="action" value="approve">Approve</button>
+                        <button type="submit" name="action" value="reject">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No pending candidates.</p>
+    {% endif %}
+</body>
+</html>

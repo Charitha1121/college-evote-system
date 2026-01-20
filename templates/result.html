@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><title>Results</title></head>
+<body>
+<h2>Election Results</h2>
+{% for r in results %}
+<p>{{r[0]}} : {{r[1]}} votes</p>
+{% endfor %}
+<p>Trust Score: {{trust_score}}%</p>
+</body>
+</html>

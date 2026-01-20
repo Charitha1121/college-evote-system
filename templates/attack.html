@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EvoteX - Attack Simulation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Attack Simulation</h2>
+        {% if message %}
+            <div class="flash">{{ message }}</div>
+        {% endif %}
+        <form method="POST">
+            <select name="attack_type">
+                <option value="duplicate_vote">Duplicate Vote Attempt</option>
+                <option value="admin_tamper">Admin Tampering</option>
+            </select>
+            <button type="submit">Simulate Attack</button>
+        </form>
+    </div>
+</body>
+</html>

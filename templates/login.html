@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EvoteX - Login</title>
+</head>
+<body>
+    <h2>Student Login</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label>Phone Number:</label><br>
+        <input type="text" name="phone" placeholder="Enter 10-digit number" required><br><br>
+        <input type="submit" value="Send Token">
+    </form>
+</body>
+</html>

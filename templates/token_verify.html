@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EvoteX - Token Verification</title>
+</head>
+<body>
+    <h2>Enter Your Token</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label>Token:</label><br>
+        <input type="text" name="token" placeholder="Enter your token" required><br><br>
+        <input type="submit" value="Verify Token">
+    </form>
+</body>
+</html>
