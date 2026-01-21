@@ -1,27 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EvoteX - Vote</title>
+    <meta charset="UTF-8">
+    <title>Cast Your Vote | EvoteX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #141e30, #243b55);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            margin: 0;
+        }
+        .card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            padding: 35px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.4);
+        }
+        h2 { text-align: center; color: #00e6e6; margin-bottom: 25px; }
+        
+        /* New styling for the Roll Number input */
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 14px; color: #00e6e6; }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            color: #fff;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .input-group input:focus { border-color: #00e6e6; }
+
+        .candidate-option {
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+        .candidate-option:hover {
+            background: rgba(0, 230, 230, 0.1);
+            border-color: #00e6e6;
+        }
+        input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+            accent-color: #00e6e6;
+        }
+        .info b { font-size: 16px; color: #fff; }
+        .info p { font-size: 13px; margin: 0; color: #aaa; }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 25px;
+            border: none;
+            background: #00e6e6;
+            color: #003333;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #00cccc; }
+    </style>
 </head>
 <body>
-    <h2>Vote for Your Candidate</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+
+<div class="card">
+    <h2>Cast Your Vote</h2>
 
     <form method="POST">
-        {% for candidate in candidates %}
-            <input type="radio" name="candidate" value="{{ candidate[0] }}"> 
-            <b>{{ candidate[1] }}</b> - {{ candidate[2] }}<br>
-        {% endfor %}
-        <br>
-        <input type="submit" value="Vote">
+        <div class="input-group">
+            <label for="voter_roll">Verify Your Roll Number</label>
+            <input type="text" id="voter_roll" name="voter_roll" placeholder="Enter Roll Number" required>
+        </div>
+
+        <label style="display: block; margin-bottom: 10px; font-size: 14px; color: #00e6e6;">Select a Candidate:</label>
+
+        {% if candidates %}
+            {% for candidate in candidates %}
+            <label class="candidate-option">
+                <input type="radio" name="candidate" value="{{ candidate['id'] }}" required>
+                <div class="info">
+                    <b>{{ candidate['name'] }}</b>
+                    <p>{{ candidate['position'] }}</p>
+                </div>
+            </label>
+            {% endfor %}
+            <button type="submit">Submit Official Vote</button>
+        {% else %}
+            <p style="text-align: center;">No approved candidates available.</p>
+        {% endif %}
     </form>
+</div>
+
 </body>
 </html>

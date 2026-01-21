@@ -20,5 +20,15 @@
         <input type="text" name="phone" placeholder="Enter 10-digit number" required><br><br>
         <input type="submit" value="Send Token">
     </form>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<div class="container">
+    <h2>College Evote System</h2>
+    <form method="POST">
+        <input type="email" name="email" placeholder="College Email (n8)" required>
+        <button type="submit">Generate Token</button>
+    </form>
+</div>
+
 </body>
 </html>

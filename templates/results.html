@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Election Results | EvoteX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00e6e6;
+            --winner: #ffd700;
+            --bg: #141e30;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #243b55, #141e30);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { 
+            text-align: center; 
+            font-weight: 600; 
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-card.winner {
+            border-left-color: var(--winner);
+            background: rgba(255, 215, 0, 0.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .candidate-name { font-size: 1.3rem; font-weight: 600; }
+        .vote-count { font-size: 1.1rem; color: var(--primary); font-weight: 600; }
+        .winner .vote-count { color: var(--winner); }
+
+        /* Progress Bar Logic */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #008080, var(--primary));
+            transition: width 1.5s cubic-bezier(0.1, 0.42, 0.41, 1);
+        }
+
+        .winner .progress-bar {
+            background: linear-gradient(90deg, #b8860b, var(--winner));
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { color: var(--primary); }
+
+        .crown { font-size: 1.5rem; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2><span style="color: var(--primary);">Live</span> Standings</h2>
+
+    {% if results %}
+        {# Calculate total votes for percentage bars #}
+        {% set total_votes = 0 %}
+        {% for row in results %}{% set total_votes = total_votes + row['vote_count'] %}{% endfor %}
+
+        {% for row in results %}
+            {% set is_leader = loop.first and row['vote_count'] > 0 %}
+            {# Avoid division by zero #}
+            {% set percent = (row['vote_count'] / total_votes * 100) if total_votes > 0 else 0 %}
+
+            <div class="result-card {{ 'winner' if is_leader }}">
+                <div class="card-header">
+                    <div class="candidate-name">
+                        {{ ' <span class="crown">👑</span>'|safe if is_leader }}{{ row['name'] }}
+                    </div>
+                    <div class="vote-count">{{ row['vote_count'] }} Votes</div>
+                </div>
+                
+                <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">{{ row['position'] }}</div>
+
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: {{ percent }}%;"></div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 40px;">
+            <p>Waiting for the first votes to be cast...</p>
+        </div>
+    {% endif %}
+
+    <div style="text-align: center;">
+        <a href="/" class="back-btn">← Return to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Election Home</title>
+</head>
+<body>
+    <h1>Election Portal</h1>
+    <hr>
+
+    {% if phase == "REGISTRATION_OPEN" %}
+        <div style="background-color: #e1f5fe; padding: 20px; border-radius: 10px;">
+            <h2>Candidate Registration is OPEN!</h2>
+            <p>Registration ends on: {{ reg_end.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            <a href="{{ url_for('candidate_register') }}" 
+               style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+               Register for Candidacy
+            </a>
+        </div>
+
+    {% elif phase == "COUNTDOWN_TO_VOTING" %}
+        <div style="background-color: #fff3cd; padding: 20px; border-radius: 10px;">
+            <h2>Registration has Closed</h2>
+            <p>The candidate list is being finalized.</p>
+            <h3>Voting starts in: {{ countdown }}</h3>
+            <p>Official start time: {{ vote_start.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        </div>
+
+    {% elif phase == "VOTING_OPEN" %}
+        <div style="background-color: #d4edda; padding: 20px; border-radius: 10px;">
+            <h2>Voting is now LIVE!</h2>
+            <a href="{{ url_for('vote') }}" 
+               style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+               Go to Voting Booth
+            </a>
+        </div>
+
+    {% elif phase == "RESULTS_PHASE" %}
+        <h2>Election Results</h2>
+        <a href="{{ url_for('results') }}">View Final Results</a>
+
+    {% else %}
+        <h2>Registration has not started yet.</h2>
+    {% endif %}
+
+</body>
+</html>

@@ -1,27 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EvoteX - Dashboard</title>
+    <meta charset="UTF-8">
+    <title>EvoteX – Election Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2, h3 {
+            text-align: center;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 8px;
+            width: 30%;
+            text-align: center;
+        }
+
+        .progress {
+            width: 100%;
+            background: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #4caf50;
+            text-align: right;
+            padding-right: 8px;
+            color: white;
+            font-size: 12px;
+            line-height: 20px;
+        }
+
+        .candidate {
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: gray;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Election Dashboard</h2>
 
-    <p>Total Students: {{ total_students }}</p>
-    <p>Total Voted: {{ total_voted }}</p>
-    <p>Participation Rate: {{ participation }}%</p>
+<div class="container">
+    <h2>📊 EvoteX – Live Election Dashboard</h2>
 
-    {% if candidates %}
-        <h3>Candidate Votes</h3>
-        <ul>
-        {% for c in candidates %}
-            <li>{{ c[0] }} : {{ c[1] }} votes</li>
-        {% endfor %}
-        </ul>
-        {% if chart_path %}
-            <img src="{{ url_for('static', filename='results.png') }}" alt="Election Chart">
-        {% endif %}
-    {% else %}
-        <p>No candidates approved yet.</p>
-    {% endif %}
+    <div class="stats">
+        <div class="stat-box">
+            <h3>Total Voters</h3>
+            <p id="total_voters">{{ total_students }}</p>
+        </div>
+        <div class="stat-box">
+            <h3>Voted</h3>
+            <p id="total_voted">{{ total_voted }}</p>
+        </div>
+        <div class="stat-box">
+            <h3>Participation</h3>
+            <p id="participation">{{ participation }}%</p>
+        </div>
+    </div>
+
+    <h3>🗳️ Live Candidate Results</h3>
+    <div id="results">
+        <!-- Live data loads here -->
+    </div>
+
+    <div class="footer">
+        Dedicated to Our College • Secure • Transparent • Real-Time
+    </div>
+</div>
+
+<script>
+function loadResults() {
+    fetch("/live_results")
+        .then(response => response.json())
+        .then(data => {
+            let html = "";
+            data.results.forEach(c => {
+                let percent = c.votes * 10;
+                if (percent > 100) percent = 100;
+
+                html += `
+                    <div class="candidate">
+                        <strong>${c.name}</strong> — ${c.votes} votes
+                        <div class="progress">
+                            <div class="progress-bar" style="width:${percent}%">
+                                ${percent}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("results").innerHTML = html;
+        });
+}
+
+loadResults();
+setInterval(loadResults, 3000); // refresh every 3 seconds
+</script>
+
 </body>
 </html>
