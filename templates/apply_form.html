@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apply for {{ club }} | EvoteX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .form-container { background: rgba(255, 255, 255, 0.08); padding: 40px; border-radius: 20px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; }
+        label { font-size: 0.9em; color: #00e6e6; }
+        .btn-submit { width: 100%; padding: 15px; background: #00e6e6; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .info-box { background: rgba(0, 230, 230, 0.1); padding: 10px; border-radius: 8px; font-size: 0.8em; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Club Application</h2>
+        <p style="margin-bottom: 25px;">Applying for: <b>{{ club }}</b></p>
+        
+        <div class="info-box">
+            Verified as <b>Year {{ year }}</b> student. Position eligibility is locked based on your academic year.
+        </div>
+
+        <form method="POST">
+            <label>Full Name</label>
+            <input type="text" value="{{ user['name'] }}" readonly>
+            
+            <label>Roll Number</label>
+            <input type="text" value="{{ user['roll'] }}" readonly>
+
+            <label>Phone Number</label>
+            <input type="text" value="{{ user['phone'] }}" readonly>
+
+            <label>Target Position</label>
+            <select name="position" required>
+                <option value="" disabled selected>Select a position...</option>
+                {% for pos in positions %}
+                <option value="{{ pos }}">{{ pos }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-submit">Submit Application</button>
+        </form>
+    </div>
+</body>
+</html>

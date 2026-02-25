@@ -16,6 +16,7 @@
             justify-content: center;
             font-family: 'Poppins', sans-serif;
             color: #fff;
+            margin: 0;
         }
 
         .card {
@@ -42,6 +43,7 @@
             border: none;
             outline: none;
             font-size: 14px;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
         }
 
         button {
@@ -54,10 +56,12 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 15px;
+            transition: 0.3s;
         }
 
         button:hover {
             background: #00cccc;
+            transform: translateY(-2px);
         }
 
         .note {
@@ -92,13 +96,15 @@
 
         <input type="text" name="phone" placeholder="Phone Number" required>
 
-        <input type="text" name="position" placeholder="Position Applying For" required>
+        <input type="text" name="position" placeholder="Position (e.g. President)" required>
+
+        <input type="text" name="club" placeholder="Club Name (e.g. Coding Club)" required>
 
         <button type="submit">Submit Application</button>
     </form>
 
     <p class="note">
-        Registration allowed only once per phone number.<br>
+        Registration allowed only once per candidate.<br>
         Final approval by Election Admin.
     </p>
 

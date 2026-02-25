@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote Confirmed | EvoteX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .receipt { background: white; color: #141e30; padding: 40px; border-radius: 20px; width: 100%; max-width: 450px; text-align: center; }
+        .check-mark { font-size: 50px; color: #28a745; margin-bottom: 20px; }
+        .summary-list { text-align: left; background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .btn-home { display: block; background: #141e30; color: white; padding: 15px; text-decoration: none; border-radius: 8px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="check-mark">✔</div>
+        <h2>Vote Cast Successfully!</h2>
+        <p>Your choices for <b>{{ club }}</b> have been recorded and a confirmation has been sent to your email.</p>
+        
+        <div class="summary-list">
+            <h4 style="margin-top: 0;">Summary of Selections:</h4>
+            {% for pos, c_id in selections.items() %}
+                <p><b>{{ pos }}:</b> Candidate ID #{{ c_id }}</p>
+            {% endfor %}
+        </div>
+
+        <a href="{{ url_for('home') }}" class="btn-home">Return to Dashboard</a>
+    </div>
+</body>
+</html>

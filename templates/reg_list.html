@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Clubs | EvoteX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; padding: 40px; }
+        .container { max-width: 800px; margin: auto; }
+        .club-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #00e6e6;
+        }
+        .btn-apply { background: #00e6e6; color: #141e30; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .back-link { color: #888; text-decoration: none; margin-bottom: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('home') }}" class="back-link">← Back to Dashboard</a>
+        <h1>Clubs Accepting Registrations</h1>
+        <p>Showing clubs for <b>{{ session['branch'] }}</b> and College-wide clubs.</p>
+
+        {% for club in clubs %}
+        <div class="club-card">
+            <div>
+                <h3 style="margin: 0;">{{ club['name'] }}</h3>
+                <small style="color: #00e6e6;">Category: {{ club['dept'] }}</small>
+            </div>
+            <a href="{{ url_for('apply', club_name=club['name']) }}" class="btn-apply">Apply Now</a>
+        </div>
+        {% else %}
+        <p>No clubs are currently open for your department.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

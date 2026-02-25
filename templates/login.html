@@ -1,34 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EvoteX - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvoteX - Student Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Student Login</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    <div class="container">
+        <div class="glass-card">
+            <h2>Voter <span class="cyan">Identity</span></h2>
+            <p>Enter your details to receive a secure voting token.</p>
 
-    <form method="POST">
-        <label>Phone Number:</label><br>
-        <input type="text" name="phone" placeholder="Enter 10-digit number" required><br><br>
-        <input type="submit" value="Send Token">
-    </form>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
 
-<div class="container">
-    <h2>College Evote System</h2>
-    <form method="POST">
-        <input type="email" name="email" placeholder="College Email (n8)" required>
-        <button type="submit">Generate Token</button>
-    </form>
-</div>
-
+            <form method="POST">
+                <div class="input-group">
+                    <label>Roll Number</label>
+                    <input type="text" name="roll" placeholder="e.g. 2026-CS-01" required>
+                </div>
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="Enter registered 10-digit number" required>
+                </div>
+                <button type="submit" class="btn-primary">Send Secure Token</button>
+            </form>
+            
+            <div class="footer-note">
+                <p>Identity verified against official college records.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

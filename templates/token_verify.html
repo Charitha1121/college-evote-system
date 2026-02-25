@@ -1,24 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EvoteX - Token Verification</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvoteX - Verify Token</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Enter Your Token</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    <div class="container">
+        <div class="glass-card">
+            <h2>Two-Factor <span class="cyan">Verification</span></h2>
+            <p>A 6-digit secure token has been sent to your registered device.</p>
 
-    <form method="POST">
-        <label>Token:</label><br>
-        <input type="text" name="token" placeholder="Enter your token" required><br><br>
-        <input type="submit" value="Verify Token">
-    </form>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="input-group">
+                    <label>Enter Token</label>
+                    <input type="text" name="token" placeholder="6-digit code" maxlength="6" required autofocus>
+                </div>
+                <button type="submit" class="btn-primary">Verify & Unlock Ballot</button>
+            </form>
+
+            <div class="footer-note">
+                <p>Tokens expire after 15 minutes of inactivity.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

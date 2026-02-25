@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voting for {{ club }} | EvoteX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; padding: 40px; }
+        .ballot-container { max-width: 700px; margin: auto; background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; }
+        .position-section { margin-bottom: 40px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px; }
+        .position-title { color: #00e6e6; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+        .candidate-row { 
+            display: flex; align-items: center; padding: 15px; border-radius: 8px; 
+            margin-bottom: 10px; background: rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s;
+        }
+        .candidate-row:hover { background: rgba(0, 230, 230, 0.1); }
+        input[type="radio"] { margin-right: 15px; transform: scale(1.5); }
+        .btn-submit { width: 100%; padding: 20px; background: #28a745; border: none; color: white; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="ballot-container">
+        <h1>{{ club }} Official Ballot</h1>
+        <p style="margin-bottom: 30px;">Please select one candidate for each position below:</p>
+
+        <form method="POST">
+            {% for position, candidates in grouped.items() %}
+            <div class="position-section">
+                <h3 class="position-title">{{ position }}</h3>
+                {% for c in candidates %}
+                <label class="candidate-row">
+                    <input type="radio" name="{{ position }}" value="{{ c['id'] }}" required>
+                    <div>
+                        <div style="font-weight: 600;">{{ c['name'] }}</div>
+                        <div style="font-size: 0.8em; opacity: 0.7;">Roll: {{ c['roll'] }}</div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-submit">Confirm and Cast Ballot</button>
+        </form>
+    </div>
+</body>
+</html>

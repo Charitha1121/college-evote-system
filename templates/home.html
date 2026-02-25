@@ -1,46 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Election Home</title>
+    <meta charset="UTF-8">
+    <title>Student Portal | EvoteX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #141e30, #243b55);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .ticker-wrap {
+            width: 100%;
+            background: rgba(0, 230, 230, 0.2);
+            border-bottom: 1px solid #00e6e6;
+            padding: 10px 0;
+            overflow: hidden;
+        }
+        .ticker {
+            white-space: nowrap;
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+            font-weight: 600;
+            color: #00e6e6;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .container {
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: auto;
+            text-align: center;
+        }
+        .user-profile {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #00e6e6; }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: 0.3s;
+            width: 80%;
+        }
+        .btn-reg { background: #007bff; }
+        .btn-vote { background: #28a745; }
+        .btn-res { background: #6f42c1; }
+        .disabled { background: #444; cursor: not-allowed; opacity: 0.5; }
+        .logout-btn { color: #ff4d4d; text-decoration: none; font-size: 0.9em; }
+        .stats-label { color: #888; font-size: 0.8em; margin-top: 10px; display: block; }
+    </style>
 </head>
 <body>
-    <h1>Election Portal</h1>
-    <hr>
 
-    {% if phase == "REGISTRATION_OPEN" %}
-        <div style="background-color: #e1f5fe; padding: 20px; border-radius: 10px;">
-            <h2>Candidate Registration is OPEN!</h2>
-            <p>Registration ends on: {{ reg_end.strftime('%B %d, %Y at %I:%M %p') }}</p>
-            <a href="{{ url_for('candidate_register') }}" 
-               style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-               Register for Candidacy
-            </a>
+{% if ticker %}
+<div class="ticker-wrap">
+    <div class="ticker">📢 ATTENTION: Election Results are now LIVE! Scroll down to the results section to view the winners for all clubs.</div>
+</div>
+{% endif %}
+
+<div class="container">
+    <div class="user-profile">
+        <div style="text-align: left;">
+            <h3 style="margin: 0; color: #00e6e6;">{{ user['name'] }}</h3>
+            <span style="font-size: 0.8em; opacity: 0.8;">{{ user['roll'] }} | {{ user['branch'] }} | Year {{ year }}</span>
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Next Voter / Logout</a>
+    </div>
+
+    <h1>EvoteX Student Portal</h1>
+    <p>Current System Phase: <b style="color: #00e6e6;">{{ phase.replace('_', ' ') }}</b></p>
+
+    <div class="grid">
+        <div class="card">
+            <h2 style="color: #007bff;">Registrations</h2>
+            <p>Apply for leadership roles in your department's clubs.</p>
+            {% if phase == "REGISTRATION" %}
+                <a href="{{ url_for('registrations') }}" class="btn btn-reg">Browse Clubs</a>
+                <span class="stats-label">{{ reg_count }} clubs available for {{ user['branch'] }}</span>
+            {% else %}
+                <a href="#" class="btn disabled">Closed</a>
+            {% endif %}
         </div>
 
-    {% elif phase == "COUNTDOWN_TO_VOTING" %}
-        <div style="background-color: #fff3cd; padding: 20px; border-radius: 10px;">
-            <h2>Registration has Closed</h2>
-            <p>The candidate list is being finalized.</p>
-            <h3>Voting starts in: {{ countdown }}</h3>
-            <p>Official start time: {{ vote_start.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        <div class="card">
+            <h2 style="color: #28a745;">Voting</h2>
+            <p>Cast your vote for candidates across multiple clubs.</p>
+            {% if phase == "VOTING" %}
+                <a href="{{ url_for('voting_booth') }}" class="btn btn-vote">Ongoing Votings</a>
+                <span class="stats-label">{{ vote_count }} clubs active now</span>
+            {% else %}
+                <a href="#" class="btn disabled">Locked</a>
+            {% endif %}
         </div>
 
-    {% elif phase == "VOTING_OPEN" %}
-        <div style="background-color: #d4edda; padding: 20px; border-radius: 10px;">
-            <h2>Voting is now LIVE!</h2>
-            <a href="{{ url_for('vote') }}" 
-               style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-               Go to Voting Booth
-            </a>
+        <div class="card">
+            <h2 style="color: #6f42c1;">Results</h2>
+            <p>View the final standing and winners.</p>
+            {% if phase == "RESULTS" %}
+                <a href="{{ url_for('results') }}" class="btn btn-res">View Standings</a>
+            {% else %}
+                <a href="#" class="btn disabled">Coming Soon</a>
+            {% endif %}
         </div>
+    </div>
 
-    {% elif phase == "RESULTS_PHASE" %}
-        <h2>Election Results</h2>
-        <a href="{{ url_for('results') }}">View Final Results</a>
-
-    {% else %}
-        <h2>Registration has not started yet.</h2>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="margin-top:30px; padding: 15px; border-radius: 10px; background: rgba(0,0,0,0.3); color: {% if category=='danger' %}#ff4d4d{% else %}#28a745{% endif %}; border: 1px solid currentColor;">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
 
 </body>
 </html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote | {{ club_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; padding: 40px; }
+        .container { max-width: 600px; margin: auto; }
+        .cand-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #28a745;
+        }
+        .btn-submit { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .back-link { color: #888; text-decoration: none; margin-bottom: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('voting_booth') }}" class="back-link">← Back to Clubs</a>
+        <h1>{{ club_name }} Election</h1>
+        <p>Select your candidate and cast your final vote.</p>
+
+        <form method="POST">
+            {% for cand in candidates %}
+            <div class="cand-card">
+                <div>
+                    <h3 style="margin: 0;">{{ cand['name'] }}</h3>
+                    <small style="color: #ccc;">Position: {{ cand['position'] }}</small>
+                </div>
+                <input type="radio" name="candidate_id" value="{{ cand['id'] }}" required>
+            </div>
+            {% else %}
+            <p>No approved candidates for this club yet.</p>
+            {% endfor %}
+            
+            {% if candidates %}
+            <button type="submit" class="btn-submit" style="width: 100%; margin-top: 20px;">Submit My Vote</button>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>
