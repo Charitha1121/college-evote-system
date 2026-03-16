@@ -1,4 +1,8 @@
 __pycache__/
 *.db
+voters.csv
+voters_test.csv
 .env
 venv/
+.DS_store
+Thumbs.db

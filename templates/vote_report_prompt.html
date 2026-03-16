@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote Confirmed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; text-align: center; padding: 50px; }
+        .card { 
+            background: rgba(255, 255, 255, 0.05); 
+            padding: 30px; 
+            border-radius: 15px; 
+            max-width: 500px; 
+            margin: auto; 
+            border: 1px solid #28a745;
+        }
+        .vote-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn-report { 
+            background: #28a745; color: white; border: none; padding: 12px 25px; 
+            border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%;
+        }
+        .skip-link { color: #888; text-decoration: none; display: block; margin-top: 15px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color: #28a745;">Votes Recorded!</h2>
+        <p>You have successfully voted in <strong>{{ batch.club }}</strong></p>
+        
+        <div style="text-align: left; margin: 20px 0;">
+            <p style="color: #888; font-size: 0.8rem; margin-bottom: 5px;">SUMMARY OF YOUR VOTES:</p>
+            {% for item in batch.votes %}
+            <div class="vote-item">
+                <span>{{ item.position }}</span>
+                <span style="font-weight: 600;">{{ item.candidate }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form action="{{ url_for('send_vote_report') }}" method="POST">
+            <button type="submit" class="btn-report">Email Me My Receipt</button>
+        </form>
+        
+        <a href="{{ url_for('voting_booth') }}" class="skip-link">Return to Voting Booth</a>
+    </div>
+</body>
+</html>

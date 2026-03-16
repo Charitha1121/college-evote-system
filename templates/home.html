@@ -146,6 +146,21 @@
       {% endif %}
     {% endwith %}
 </div>
+<script>
+    // Added a safety check: only run if club data exists
+    {% if club %}
+        const regEnd = new Date("{{ club['reg_end'] }}").getTime();
+        const voteStart = new Date("{{ club['vote_start'] }}").getTime();
+
+        function checkPhase() {
+            const now = new Date().getTime();
+            if (now >= voteStart) {
+                window.location.reload(); 
+            }
+        }
+        setInterval(checkPhase, 1000);
+    {% endif %}
+</script>
 
 </body>
 </html>

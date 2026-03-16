@@ -6,18 +6,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { background: #141e30; color: white; font-family: 'Poppins', sans-serif; padding: 40px; }
-        .container { max-width: 600px; margin: auto; }
+        .container { max-width: 700px; margin: auto; }
+        .position-group {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .position-header { border-bottom: 2px solid #28a745; padding-bottom: 10px; margin-bottom: 15px; color: #28a745; }
         .cand-card {
             background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 5px solid #28a745;
         }
-        .btn-submit { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-submit { 
+            background: #28a745; color: white; border: none; padding: 15px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem;
+        }
         .back-link { color: #888; text-decoration: none; margin-bottom: 20px; display: inline-block; }
     </style>
 </head>
@@ -25,23 +35,36 @@
     <div class="container">
         <a href="{{ url_for('voting_booth') }}" class="back-link">← Back to Clubs</a>
         <h1>{{ club_name }} Election</h1>
-        <p>Select your candidate and cast your final vote.</p>
+        <p>Choose one candidate for each position and click submit at the bottom.</p>
 
-        <form method="POST">
-            {% for cand in candidates %}
-            <div class="cand-card">
-                <div>
-                    <h3 style="margin: 0;">{{ cand['name'] }}</h3>
-                    <small style="color: #ccc;">Position: {{ cand['position'] }}</small>
-                </div>
-                <input type="radio" name="candidate_id" value="{{ cand['id'] }}" required>
-            </div>
-            {% else %}
-            <p>No approved candidates for this club yet.</p>
+        <form action="{{ url_for('vote_club', club_name=club_name) }}" method="POST">
+            {% set displayed_positions = [] %}
+            {% for outer_cand in candidates %}
+                {% if outer_cand.position not in displayed_positions %}
+                    <div class="position-group">
+                        <h2 class="position-header">{{ outer_cand.position }}</h2>
+                        
+                        {% for cand in candidates %}
+                            {% if cand.position == outer_cand.position %}
+                            <label class="cand-card">
+                                <div>
+                                    <h3 style="margin: 0;">{{ cand.name }}</h3>
+                                    <small style="color: #aaa;">ID: {{ cand.id }}</small>
+                                </div>
+                                {# Radio name is the position name to ensure one choice per position #}
+                                <input type="radio" name="pos_{{ cand.position }}" value="{{ cand.id }}" required>
+                            </label>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% set _ = displayed_positions.append(outer_cand.position) %}
+                {% endif %}
             {% endfor %}
-            
+
             {% if candidates %}
-            <button type="submit" class="btn-submit" style="width: 100%; margin-top: 20px;">Submit My Vote</button>
+                <button type="submit" class="btn-submit">Cast All Votes & Generate Report</button>
+            {% else %}
+                <p>No candidates available.</p>
             {% endif %}
         </form>
     </div>

@@ -1,29 +1,35 @@
 import sqlite3
 
-def create_initial_admin():
+def create_initial_admins():
     conn = sqlite3.connect('voters.db')
     cursor = conn.cursor()
 
-    # Admin Details
-    club_name = "Tech Wizards"
-    admin_user = "admin1"
-    admin_pass = "pass123"
-    department = "CSE"
+    # Ensure the table exists before inserting
+    cursor.execute('''CREATE TABLE IF NOT EXISTS clubs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE, admin_user TEXT UNIQUE, admin_pass TEXT, dept TEXT,
+        reg_start TEXT, reg_end TEXT, vote_start TEXT, vote_end TEXT
+    )''')
 
-    try:
-        cursor.execute('''
-            INSERT INTO clubs (name, admin_user, admin_pass, dept) 
-            VALUES (?, ?, ?, ?)
-        ''', (club_name, admin_user, admin_pass, department))
-        
-        conn.commit()
-        print(f"Success! Admin created for {club_name}.")
-        print(f"Username: {admin_user}")
-        print(f"Password: {admin_pass}")
-    except sqlite3.IntegrityError:
-        print("Error: This admin username or club name already exists.")
-    finally:
-        conn.close()
+    # List of Admin Details (Club Name, Username, Password, Department)
+    clubs_to_add = [
+        ("Tech Wizards", "admin1", "pass123", "CSE"),
+        ("Eco Club", "admin2", "green456", "ECE"),
+        ("Literary Society", "admin3", "read789", "MECH")
+    ]
+
+    for club in clubs_to_add:
+        try:
+            cursor.execute('''
+                INSERT INTO clubs (name, admin_user, admin_pass, dept) 
+                VALUES (?, ?, ?, ?)
+            ''', club)
+            print(f"Success! Admin created for {club[0]}. (User: {club[1]})")
+        except sqlite3.IntegrityError:
+            print(f"Skip: The club '{club[0]}' or username '{club[1]}' already exists.")
+
+    conn.commit()
+    conn.close()
 
 if __name__ == "__main__":
-    create_initial_admin()
+    create_initial_admins()

@@ -1,12 +1,31 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_mail import Mail, Message 
 from datetime import datetime, timedelta
 import sqlite3
 import secrets
+import csv
 import os
-
+from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
+# Define IST
+IST = timezone(timedelta(hours=5, minutes=30))
+now = datetime.now(IST)
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
+
+# --- MAIL CONFIGURATION ---
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'boddupallycharitha@gmail.com' 
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = 'boddupallycharitha@gmail.com'
+
+mail = Mail(app)
+
+# Path to your local CSV file
+CSV_PATH = r'C:\Users\DELL\Desktop\evote\voters.csv'
 
 def get_db_connection():
     conn = sqlite3.connect('voters.db', timeout=10)
@@ -21,7 +40,7 @@ def calculate_year(roll):
         return 1
     except: return 1
 
-# --- DATABASE INITIALIZATION ---
+# --- DATABASE INITIALIZATION & ROBUST CSV SYNC ---
 def init_db():
     conn = get_db_connection()
     conn.execute('''CREATE TABLE IF NOT EXISTS clubs (
@@ -39,8 +58,33 @@ def init_db():
         status TEXT DEFAULT 'pending', vote_count INTEGER DEFAULT 0
     )''')
     conn.execute('''CREATE TABLE IF NOT EXISTS votes_cast (
-        voter_roll TEXT, club TEXT
+        voter_roll TEXT, club TEXT, position TEXT
     )''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS authorized_voters (
+        roll TEXT PRIMARY KEY, name TEXT, phone TEXT, email TEXT, branch TEXT
+    )''')
+
+    if os.path.exists(CSV_PATH):
+        try:
+            with open(CSV_PATH, mode='r', encoding='utf-8-sig') as f:
+                raw_reader = csv.DictReader(f)
+                count = 0
+                for row in raw_reader:
+                    clean_row = {k.strip().lower(): v.strip() for k, v in row.items()}
+                    conn.execute('''INSERT OR REPLACE INTO authorized_voters (roll, name, phone, email, branch) 
+                                   VALUES (?, ?, ?, ?, ?)''', 
+                                (clean_row.get('roll'), 
+                                 clean_row.get('name'), 
+                                 clean_row.get('phone'),
+                                 clean_row.get('email'), 
+                                 clean_row.get('branch')))
+                    count += 1
+            print(f">>> Successfully synced {count} records from {CSV_PATH}")
+        except Exception as e:
+            print(f">>> CSV Sync Error: {e}")
+    else:
+        print(f">>> Warning: CSV file not found at {CSV_PATH}")
+
     conn.commit()
     conn.close()
 
@@ -90,7 +134,7 @@ def home():
     vote_count = conn.execute('SELECT COUNT(DISTINCT club) FROM candidates WHERE status="approved"').fetchone()[0]
     conn.close()
     
-    return render_template("home.html", user=user, reg_count=reg_count, vote_count=vote_count, phase=phase, ticker=ticker, year=calculate_year(roll))
+    return render_template("home.html", user=user, reg_count=reg_count, vote_count=vote_count, phase=phase, ticker=ticker, year=calculate_year(roll), club=club)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -100,12 +144,14 @@ def login():
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM authorized_voters WHERE roll = ? AND phone = ?', (roll, phone)).fetchone()
         conn.close()
+        
         if user:
             session['pending_roll'] = roll 
             token = str(secrets.randbelow(899999) + 100000)
             session['active_token'] = token 
             print(f">>> DEBUG TOKEN FOR {roll}: {token}")
             return redirect(url_for('token_verify'))
+            
         flash("Unauthorized Roll Number or Phone.", "danger")
     return render_template("login.html")
 
@@ -121,58 +167,152 @@ def token_verify():
         flash("Invalid Token", "danger")
     return render_template("token_verify.html")
 
+@app.route('/registrations')
+def registrations():
+    if 'verified_voter' not in session: return redirect(url_for('login'))
+    branch = session.get('branch', 'All')
+    conn = get_db_connection()
+    now = datetime.now().isoformat()
+    my_clubs = conn.execute('''SELECT * FROM clubs WHERE dept IN (?, "All") 
+                               AND reg_start <= ? AND reg_end >= ?''', (branch, now, now)).fetchall()
+    conn.close()
+    return render_template("reg_list.html", clubs=my_clubs)
+
+@app.route('/apply/<club_name>', methods=['GET', 'POST'])
+def apply(club_name):
+    if 'verified_voter' not in session: return redirect(url_for('login'))
+    roll = session['verified_voter']
+    year = calculate_year(roll)
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM authorized_voters WHERE roll = ?', (roll,)).fetchone()
+    allowed = conn.execute('SELECT position_name FROM positions_config WHERE club_name=? AND year=?', (club_name, year)).fetchall()
+    positions = [row['position_name'] for row in allowed]
+
+    if request.method == 'POST':
+        pos = request.form.get('position')
+        existing = conn.execute('SELECT id FROM candidates WHERE roll=? AND club=?', (roll, club_name)).fetchone()
+        if not existing:
+            conn.execute('INSERT INTO candidates (name, roll, phone, position, club) VALUES (?, ?, ?, ?, ?)',
+                         (user['name'], roll, user['phone'], pos, club_name))
+            conn.commit()
+            flash(f"Applied successfully for {club_name}!", "success")
+        else:
+            flash(f"Already applied for {club_name}.", "warning")
+        conn.close()
+        return redirect(url_for('home'))
+    
+    conn.close()
+    return render_template("apply_form.html", user=user, year=year, club=club_name, positions=positions)
+
 @app.route('/voting_booth')
 def voting_booth():
     if 'verified_voter' not in session: return redirect(url_for('login'))
     conn = get_db_connection()
-    roll = session['verified_voter']
-    
-    voted_rows = conn.execute('SELECT club FROM votes_cast WHERE voter_roll = ?', (roll,)).fetchall()
-    voted_list = [v['club'] for v in voted_rows]
-    
     all_active_clubs = conn.execute('SELECT DISTINCT club FROM candidates WHERE status="approved"').fetchall()
     conn.close()
-    return render_template("voting_list.html", clubs=all_active_clubs, voted_list=voted_list)
+    return render_template("voting_list.html", clubs=all_active_clubs)
 
 @app.route('/vote/<club_name>', methods=['GET', 'POST'])
 def vote_club(club_name):
     if 'verified_voter' not in session: return redirect(url_for('login'))
     roll = session['verified_voter']
     conn = get_db_connection()
-    
-    already = conn.execute('SELECT * FROM votes_cast WHERE voter_roll=? AND club=?', (roll, club_name)).fetchone()
-    if already:
-        conn.close()
-        flash(f"You have already cast your vote for {club_name}!", "danger")
-        return redirect(url_for('voting_booth'))
 
     if request.method == 'POST':
-        candidate_id = request.form.get('candidate_id')
-        if candidate_id:
-            conn.execute('UPDATE candidates SET vote_count = vote_count + 1 WHERE id = ?', (candidate_id,))
-            conn.execute('INSERT INTO votes_cast (voter_roll, club) VALUES (?, ?)', (roll, club_name))
-            conn.commit()
-            conn.close()
-            flash(f"Vote cast successfully for {club_name}!", "success")
-            return redirect(url_for('voting_booth'))
+        # Get all selected candidate IDs (keys start with 'pos_')
+        selected_cand_ids = [v for k, v in request.form.items() if k.startswith('pos_')]
+        
+        if not selected_cand_ids:
+            flash("No votes were selected.", "warning")
+            return redirect(url_for('vote_club', club_name=club_name))
 
+        vote_summary = []
+        # Process each selected candidate
+        for c_id in selected_cand_ids:
+            cand = conn.execute('SELECT name, position FROM candidates WHERE id = ?', (c_id,)).fetchone()
+            
+            # Record the vote in DB
+            conn.execute('UPDATE candidates SET vote_count = vote_count + 1 WHERE id = ?', (c_id,))
+            conn.execute('INSERT INTO votes_cast (voter_roll, club, position) VALUES (?, ?, ?)', 
+                         (roll, club_name, cand['position']))
+            
+            vote_summary.append({
+                'candidate': cand['name'],
+                'position': cand['position']
+            })
+
+        conn.commit()
+        
+        # Store the whole batch in session for the multi-position report
+        session['last_vote_batch'] = {
+            'club': club_name,
+            'votes': vote_summary,
+            'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        conn.close()
+        return redirect(url_for('vote_report_prompt'))
+
+    # Prepare data for display
     candidates = conn.execute('SELECT * FROM candidates WHERE club = ? AND status = "approved"', (club_name,)).fetchall()
+    voted_rows = conn.execute('SELECT position FROM votes_cast WHERE voter_roll=? AND club=?', (roll, club_name)).fetchall()
+    voted_positions = [v['position'] for v in voted_rows]
+    
     conn.close()
-    return render_template("vote_page.html", club_name=club_name, candidates=candidates)
+    return render_template("vote_page.html", club_name=club_name, candidates=candidates, voted_positions=voted_positions)
+
+# --- NEW REPORT ROUTES ---
+@app.route('/vote_report_prompt')
+def vote_report_prompt():
+    # Updated to check for batch session data
+    if 'last_vote_batch' not in session: return redirect(url_for('home'))
+    return render_template("vote_report_prompt.html", batch=session['last_vote_batch'])
+
+@app.route('/send_vote_report', methods=['POST'])
+def send_vote_report():
+    if 'verified_voter' not in session or 'last_vote_batch' not in session:
+        return redirect(url_for('login'))
+    
+    roll = session['verified_voter']
+    batch = session['last_vote_batch']
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM authorized_voters WHERE roll = ?', (roll,)).fetchone()
+    conn.close()
+
+    if user and user['email']:
+        try:
+            msg = Message(f"Voting Receipt: {batch['club']}", recipients=[user['email']])
+            
+            # Format multiple votes for the email body
+            vote_list_text = ""
+            for v in batch['votes']:
+                vote_list_text += f"- {v['position']}: {v['candidate']}\n"
+
+            msg.body = f"Hello {user['name']},\n\nThank you for voting in the {batch['club']} elections!\n\n" \
+                       f"Your selections:\n{vote_list_text}\n" \
+                       f"Date: {batch['time']}\n\n" \
+                       f"Best regards,\nE-Voting System"
+            mail.send(msg)
+            flash("Complete report sent to your email successfully!", "success")
+        except Exception as e:
+            flash(f"Error sending email: {e}", "danger")
+    else:
+        flash("Email address not found.", "warning")
+    
+    session.pop('last_vote_batch', None) 
+    return redirect(url_for('voting_booth'))
+
+# -------------------------------
+# ADMIN ROUTES & REMAINING
+# -------------------------------
 
 @app.route('/results')
 def results():
     conn = get_db_connection()
-    # Explicitly fetching as 'results' to match your HTML template
     results_query = conn.execute('''SELECT * FROM candidates 
-                                   WHERE status="approved" 
-                                   ORDER BY club ASC, vote_count DESC''').fetchall()
+                                    WHERE status="approved" 
+                                    ORDER BY club ASC, vote_count DESC''').fetchall()
     conn.close()
     return render_template("results.html", results=results_query)
-
-# -------------------------------
-# ADMIN ROUTES
-# -------------------------------
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -183,13 +323,12 @@ def admin_login():
         admin = conn.execute('SELECT * FROM clubs WHERE admin_user = ? AND admin_pass = ?', (user, pw)).fetchone()
         conn.close()
         if admin:
-            session.clear() # Clears any student flash messages
+            session.clear() 
             session['admin_club'] = admin['name']
             return redirect(url_for('admin_dashboard'))
         flash("Invalid Admin Credentials", "danger")
     return render_template("admin_login.html")
 
-# ADDED SECOND ROUTE DECORATOR TO PREVENT 404
 @app.route('/admin/dashboard')
 @app.route('/admin_dashboard')
 def admin_dashboard():
@@ -238,4 +377,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
