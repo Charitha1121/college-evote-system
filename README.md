@@ -1,189 +1,210 @@
 # 🗳️ ElectraN8 — Smart College Election Platform
 
-> **A secure, phase-controlled digital voting platform designed for transparent and organized college club elections.**
+> **A phase-controlled digital voting platform designed for transparent and organized college club elections.**
 
-**Live Demo:** https://electran8.vercel.app/
+🌐 **Live Application:** https://charitha1121.pythonanywhere.com/login
 
 ---
 
 ## 📌 Overview
 
-**ElectraN8** is a web-based election management platform developed specifically for **college club elections**.
+**ElectraN8** is a web-based election management platform designed specifically for **college club elections**.
 
-Unlike conventional e-voting projects that simply provide a login page and voting form, ElectraN8 models an election as a controlled lifecycle:
+Instead of treating an election as simply:
 
-**Candidate Registration → Admin Verification → Candidate Approval → Election Countdown → Time-Bound Voting → Results**
+```text
+Login → Vote → Result
+```
 
-The platform gives administrators complete control over the election process while ensuring that only eligible and approved candidates participate in the election.
+ElectraN8 models the complete election lifecycle:
+
+```text
+Candidate Registration
+        ↓
+Admin Verification
+        ↓
+Candidate Approval / Rejection
+        ↓
+Election Countdown
+        ↓
+Time-Bound Voting
+        ↓
+Automatic Voting Closure
+        ↓
+Election Results
+```
+
+This makes the system more than a basic e-voting application — it functions as a **college election management platform**.
 
 ---
 
 ## 🎯 Problem Statement
 
-Traditional college club elections often rely on:
+Traditional college club elections can involve:
 
 * Manual candidate registration
 * Paper-based voting
-* Unstructured candidate verification
 * Manual vote counting
-* Limited transparency
+* Unstructured candidate verification
+* Duplicate voting risks
 * Difficulty controlling election timings
-* Risk of duplicate voting
+* Limited election transparency
 
-ElectraN8 addresses these issues by providing a centralized digital election workflow.
+ElectraN8 provides a centralized digital workflow for managing these stages.
 
 ---
 
-## 💡 Our Solution
+## 💡 Core Concept
 
-ElectraN8 introduces a **phase-based election architecture**.
+ElectraN8 divides an election into controlled phases.
 
 ### 🟡 Phase 1 — Candidate Registration
 
 The administrator opens candidate registration for a predefined period.
 
-Interested students can:
+Interested students can submit:
 
-* Register their candidacy
-* Submit their student details
-* Provide their registered phone number
-* Submit their candidature for verification
+* Student name
+* Student details
+* Department
+* Phone number
+* Candidacy information
 
-Each phone number can be used for **only one candidate registration**.
+A phone number can only be used for one candidature.
 
 ---
 
 ### 🔵 Phase 2 — Candidate Verification
 
-After registration, administrators review submitted candidates.
+After registration closes, the administrator reviews all submitted applications.
 
 Each candidate can be:
 
-* ✅ Approved
-* ❌ Rejected
+**✅ Approved**
 
-Only approved candidates are eligible to appear on the official ballot.
+or
 
-Rejected candidates are automatically excluded from the voting list.
+**❌ Rejected**
+
+Only approved candidates are eligible to participate in the election.
 
 ---
 
 ### 🟣 Phase 3 — Election Countdown
 
-Once candidate registration closes, the system transitions into the election preparation phase.
+Once candidate registration ends, the platform switches to the election preparation phase.
 
-The platform displays:
+The system displays a countdown until voting begins.
+
+Students can see:
 
 * Election date
 * Voting start time
-* Countdown timer
+* Countdown
 * Election status
-* Number of approved candidates
-
-Candidates are not displayed to voters prematurely.
 
 ---
 
-### 🟢 Phase 4 — Voting
+### 🟢 Phase 4 — Time-Bound Voting
 
 Voting becomes available only during the configured election window.
 
-The system ensures:
+The system prevents voting:
 
-* Eligible voters can vote
-* Only approved candidates appear
-* A voter cannot vote multiple times
-* Voting automatically closes when the election ends
+* Before the election starts
+* After the election ends
+* More than once by the same voter
+
+Only approved candidates appear on the ballot.
 
 ---
 
-### 🔴 Phase 5 — Election Results
+### 🔴 Phase 5 — Results
 
 After voting closes, election results can be displayed.
 
-Administrators can monitor:
+The dashboard can provide:
 
-* Total eligible voters
-* Total votes
+* Total voters
+* Votes cast
 * Participation percentage
 * Candidate vote counts
 * Election outcome
 
 ---
 
-## ✨ Key Features
+# ✨ Key Features
 
-| Feature                   | Description                                                    |
-| ------------------------- | -------------------------------------------------------------- |
-| 🧑‍🎓 Student Eligibility | Restricts election participation to eligible college students  |
-| 📱 Phone Verification     | Uses phone number as a unique registration identifier          |
-| 📝 Candidate Registration | Students can submit candidature during the registration window |
-| 🔐 Admin Verification     | Admin can approve or reject candidates                         |
-| ⏰ Election Scheduling     | Registration and voting operate within predefined time windows |
-| ⏳ Countdown               | Countdown to the upcoming election                             |
-| 🗳️ Controlled Ballot     | Only approved candidates appear during voting                  |
-| 🚫 Duplicate Prevention   | Prevents a voter from casting multiple votes                   |
-| 📊 Results Dashboard      | Displays election statistics and results                       |
-| 📈 Participation Tracking | Calculates voter participation                                 |
-| 🎨 Responsive UI          | Designed for desktop and mobile users                          |
-| 🔄 Election Lifecycle     | Registration → Verification → Voting → Results                 |
+| Feature                   | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| 🎓 College Election       | Designed specifically for student/club elections |
+| 📝 Candidate Registration | Students can submit their candidature            |
+| 📱 Unique Phone Number    | Prevents multiple candidature registrations      |
+| 🔐 Admin Verification     | Admin reviews every candidate                    |
+| ✅ Approval System         | Only approved candidates enter the ballot        |
+| ❌ Rejection System        | Rejected candidates remain excluded              |
+| ⏰ Election Scheduling     | Controls registration and voting windows         |
+| ⏳ Countdown               | Displays time remaining before voting            |
+| 🗳️ Controlled Ballot     | Displays only eligible candidates                |
+| 🚫 Duplicate Prevention   | Prevents multiple votes                          |
+| 🔒 Automatic Closure      | Voting closes after the configured deadline      |
+| 📊 Results Dashboard      | Displays election statistics                     |
+| 📈 Participation Tracking | Calculates voter participation                   |
 
 ---
 
-## 🏗️ System Architecture
+# 🏗️ Election Architecture
 
 ```text
-                    ┌─────────────────────┐
-                    │      STUDENT        │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │ Eligibility Check   │
-                    └──────────┬──────────┘
-                               │
-              ┌────────────────┴────────────────┐
-              │                                 │
-              ▼                                 ▼
-     Candidate Registration              Voter Authentication
-              │                                 │
-              ▼                                 │
-     ┌──────────────────┐                      │
-     │ Pending Candidate│                      │
-     └────────┬─────────┘                      │
-              │                                 │
-              ▼                                 │
-     ┌──────────────────┐                      │
-     │ Admin Verification│                     │
-     └───────┬─────┬────┘                      │
-             │     │                           │
-        APPROVE   REJECT                       │
-             │                                 │
-             ▼                                 │
-     Approved Candidate                        │
-             │                                 │
-             └──────────────┐                  │
-                            ▼                  ▼
-                    ┌────────────────────────────┐
-                    │       ELECTION BALLOT      │
-                    └──────────────┬─────────────┘
-                                   │
-                                   ▼
-                           Vote Submission
-                                   │
-                                   ▼
-                           Duplicate Check
-                                   │
-                                   ▼
-                              Vote Stored
-                                   │
-                                   ▼
-                           Election Results
+                    ┌──────────────────┐
+                    │     STUDENT      │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                  ┌────────────────────┐
+                  │ Candidate or Voter │
+                  └─────────┬──────────┘
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+             ▼                             ▼
+    Candidate Registration          Voter Authentication
+             │                             │
+             ▼                             │
+      Pending Candidate                    │
+             │                             │
+             ▼                             │
+      Admin Verification                  │
+          /        \                       │
+         /          \                      │
+    APPROVED      REJECTED                 │
+       │              │                    │
+       ▼              ▼                    │
+Official Ballot    Excluded                │
+       │                                   │
+       └──────────────┬────────────────────┘
+                      ▼
+                Voting Window
+                      │
+                      ▼
+                Vote Submission
+                      │
+                      ▼
+              Duplicate Vote Check
+                      │
+                      ▼
+                 Vote Storage
+                      │
+                      ▼
+                Voting Closure
+                      │
+                      ▼
+                  Results
 ```
 
 ---
 
-## 🛠️ Technology Stack
+# 🛠️ Technology Stack
 
 ### Backend
 
@@ -196,9 +217,13 @@ Administrators can monitor:
 * HTML5
 * CSS3
 * JavaScript
-* Jinja2 Templates
+* Jinja2
 
-### Development Tools
+### Deployment
+
+* PythonAnywhere
+
+### Development
 
 * Git
 * GitHub
@@ -207,7 +232,7 @@ Administrators can monitor:
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```text
 ElectraN8/
@@ -233,27 +258,22 @@ ElectraN8/
 
 ---
 
-## ⚙️ Installation
+# ⚙️ Local Installation
 
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/ElectraN8.git
-```
-
-```bash
 cd ElectraN8
 ```
 
-### 2. Create a Virtual Environment
-
-Windows:
+### 2. Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate it:
+Windows:
 
 ```bash
 venv\Scripts\activate
@@ -265,120 +285,148 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-If `requirements.txt` does not exist:
-
-```bash
-pip install flask
-```
-
 ---
 
-## ▶️ Run Locally
-
-Start the Flask application:
+# ▶️ Run Locally
 
 ```bash
 python app.py
 ```
 
-The application will normally be available at:
+Open:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-Open the URL in your browser.
-
 ---
 
-## 🗄️ Database
+# 🗄️ Database
 
-ElectraN8 uses **SQLite**.
+ElectraN8 uses **SQLite**, so no separate MySQL installation is required for the academic demonstration.
 
-No separate MySQL or PostgreSQL installation is required for the college demonstration.
+The database manages:
 
-The database stores information such as:
-
-* Student/voter records
-* Candidate registrations
-* Candidate approval status
+* Voters
+* Candidates
+* Candidate status
 * Vote counts
 * Voting status
 
-If you modify the database schema during development, recreate the development database or run the appropriate migration/update logic.
+---
+
+# 🌐 Live Deployment
+
+ElectraN8 is deployed using **PythonAnywhere**.
+
+### 🔗 Live Application
+
+**https://charitha1121.pythonanywhere.com/login**
+
+The deployed application provides access to the ElectraN8 election platform.
 
 ---
 
-## 🗳️ Election Workflow
+# 🚀 Deployment Architecture
 
 ```text
-                 ELECTION CREATED
-                        │
-                        ▼
-             Candidate Registration
-                        │
-                        ▼
-               Registration Closes
-                        │
-                        ▼
-                Admin Verification
-                   /          \
-                  /            \
-             APPROVED        REJECTED
-                │                │
-                ▼                ▼
-        Official Candidate     Excluded
-              List
-                │
-                ▼
-           Election Countdown
-                │
-                ▼
-          Voting Opens
-                │
-                ▼
-        Students Cast Votes
-                │
-                ▼
-          Voting Closes
-                │
-                ▼
-          Results Released
+                    GitHub
+                       │
+                       ▼
+                Python Application
+                       │
+                       ▼
+                  Flask Backend
+                       │
+                       ▼
+                 SQLite Database
+                       │
+                       ▼
+              PythonAnywhere Server
+                       │
+                       ▼
+                ElectraN8 Portal
 ```
 
 ---
 
-## 🔐 Security & Integrity
+# 🧪 Demonstration Workflow
 
-ElectraN8 incorporates several mechanisms to improve election integrity:
+For a college demonstration, the election can be conducted as follows:
 
-### Candidate Uniqueness
+### Step 1 — Open Registration
 
-A phone number can only be associated with one candidature during the registration process.
+Admin enables candidate registration.
 
-### Candidate Approval
+### Step 2 — Candidate Submission
 
-Candidates are not automatically added to the ballot.
+Interested students submit their candidature.
 
-An administrator must explicitly approve them.
+### Step 3 — Registration Closes
 
-### Controlled Voting Window
+The registration deadline automatically closes the registration portal.
 
-Votes cannot be submitted before the election starts or after the election ends.
+### Step 4 — Admin Verification
 
-### Duplicate Vote Prevention
+Admin reviews candidate applications.
 
-Once a voter has successfully voted, their voting status is updated to prevent another vote.
+### Step 5 — Candidate Approval
 
-### Server-Side Validation
+Approved candidates are added to the official election list.
 
-Election timing and eligibility are validated by the backend rather than relying solely on frontend JavaScript.
+Rejected candidates are excluded.
+
+### Step 6 — Election Countdown
+
+The system displays the countdown until voting begins.
+
+### Step 7 — Voting Opens
+
+Eligible students can cast their votes.
+
+### Step 8 — Voting Closes
+
+The system automatically prevents votes after the configured deadline.
+
+### Step 9 — Results
+
+The election results are displayed.
 
 ---
 
-## 📊 Election Analytics
+# 🔐 Security & Integrity
 
-The dashboard can provide:
+ElectraN8 implements several controls:
+
+### Candidate Uniqueness
+
+A phone number cannot be reused for multiple candidate registrations.
+
+### Admin Approval
+
+Candidates do not automatically become election participants.
+
+### Time-Based Restrictions
+
+Registration and voting are controlled by server-side timestamps.
+
+### Approved Candidate Filtering
+
+Only candidates with an approved status are displayed on the ballot.
+
+### Duplicate Vote Prevention
+
+A voter who has already voted cannot submit another vote.
+
+### Server-Side Validation
+
+Election restrictions are enforced by the Flask backend instead of relying only on browser-side JavaScript.
+
+---
+
+# 📊 Election Analytics
+
+The platform can calculate:
 
 ```text
 Total Eligible Voters
@@ -392,7 +440,7 @@ Candidate Vote Distribution
 Election Result
 ```
 
-### Participation Rate
+Participation rate:
 
 ```text
 Participation Rate =
@@ -401,181 +449,112 @@ Participation Rate =
 
 ---
 
-## 🚀 Deployment
+# 🧠 What Makes ElectraN8 Different?
 
-ElectraN8 can be deployed using a Python-compatible hosting platform.
-
-Typical production setup:
-
-```text
-GitHub
-   │
-   ▼
-Deployment Platform
-   │
-   ▼
-Flask Application
-   │
-   ▼
-ElectraN8
-```
-
-For production deployment, configure:
-
-* `SECRET_KEY`
-* Production database
-* Environment variables
-* Proper WSGI server
-* HTTPS
-* Admin authentication
-* Persistent database storage
-
----
-
-## 🌐 Live Application
-
-### ElectraN8
-
-🔗 **Live Demo:** https://electran8.vercel.app/
-
-> If your final deployment URL is different, replace the URL above with the actual deployed application URL.
-
----
-
-## 🧪 Demonstration Flow
-
-For a college project demonstration:
-
-### Step 1
-
-Admin opens candidate registration.
-
-### Step 2
-
-Students submit their candidature.
-
-### Step 3
-
-Admin reviews applications.
-
-### Step 4
-
-Admin approves/rejects candidates.
-
-### Step 5
-
-Candidate registration closes automatically.
-
-### Step 6
-
-The system displays the election countdown.
-
-### Step 7
-
-Voting opens at the configured time.
-
-### Step 8
-
-Eligible students cast their votes.
-
-### Step 9
-
-Voting closes automatically at the configured end time.
-
-### Step 10
-
-Election results are displayed.
-
----
-
-## 🧠 What Makes ElectraN8 Different?
-
-Most student e-voting projects focus primarily on:
+Many basic student e-voting projects implement only:
 
 ```text
 Login → Vote → Result
 ```
 
-ElectraN8 focuses on the **complete election lifecycle**:
+ElectraN8 focuses on **election lifecycle management**:
 
 ```text
 Registration
       ↓
-Candidate Verification
+Verification
       ↓
-Admin Approval
+Approval
       ↓
-Election Scheduling
+Election Preparation
       ↓
 Countdown
       ↓
-Controlled Voting
+Voting
       ↓
-Duplicate Prevention
-      ↓
-Election Closure
+Automatic Closure
       ↓
 Results
 ```
 
-This makes ElectraN8 closer to an **Election Management System** rather than simply a voting form.
+The key differentiator is the **phase-based election model**.
+
+The system does not expose all election functionality at once. Features become available according to the current election phase.
 
 ---
 
-## 🎓 Intended Use
+# 🔮 Future Enhancements
 
-ElectraN8 is designed as a **college demonstration and academic project** for:
+Potential production-level improvements include:
 
-* College club elections
-* Student representative elections
-* Department-level elections
-* Student organization elections
-* Academic demonstrations of election workflows
-
-It should not be considered a production-grade public-election system without additional security auditing, authentication, cryptographic protections, infrastructure hardening, and independent verification.
-
----
-
-## 🔮 Future Enhancements
-
-Planned improvements include:
-
-* 🔐 OTP-based authentication
-* 📱 SMS-based voter verification
+* 🔐 OTP authentication
+* 📱 SMS verification
 * 🔑 Secure admin authentication
-* 🔏 Cryptographic vote integrity
+* 🔏 Cryptographically signed ballots
 * 📜 Tamper-evident audit logs
-* 📊 Real-time election analytics
-* 📄 Automated election report generation
+* 📊 Real-time analytics
+* 📄 Automated election reports
 * 🏆 Winner certificate generation
-* 📧 Candidate approval notifications
-* 🌐 Multi-election support
+* 📧 Candidate notifications
 * 👥 Role-based access control
-* ☁️ Production database support
-* 📱 Progressive Web App support
+* 🌐 Multiple simultaneous elections
+* ☁️ PostgreSQL production database
+* 📱 Progressive Web App
 
 ---
 
-## 👩‍💻 Project
+# 🎓 Academic Purpose
 
-**ElectraN8 — Smart College Election Platform**
+ElectraN8 is developed primarily as a **college academic and demonstration project**.
 
-Developed as a college-focused software engineering project with emphasis on:
+It demonstrates concepts including:
 
-> **Transparency • Controlled Elections • Candidate Verification • Time-Bound Voting • Digital Governance**
+* Web application development
+* Database management
+* Authentication
+* Authorization
+* CRUD operations
+* Election workflow design
+* Time-based access control
+* Data validation
+* Dashboard analytics
+* Deployment
+
+It is **not intended to replace certified election infrastructure or public-election systems** without substantial additional security engineering and independent auditing.
+
+---
+
+# 👩‍💻 Project
+
+## ElectraN8
+
+### Smart College Election Platform
+
+> **Register. Verify. Vote. Decide.**
+
+**Live:**
+https://charitha1121.pythonanywhere.com/login
+
+---
+
+## ⭐ Project Highlights
+
+```text
+✔ Phase-Based Election Management
+✔ Candidate Registration
+✔ Admin Approval / Rejection
+✔ Time-Bound Voting
+✔ Countdown-Based Election Preparation
+✔ Duplicate Vote Prevention
+✔ Automated Voting Closure
+✔ Election Analytics
+✔ SQLite Database
+✔ Flask Backend
+✔ PythonAnywhere Deployment
+```
 
 ---
 
 ## 📜 License
 
-This project is developed for educational and academic demonstration purposes.
-
-You are free to study and modify the project for educational use.
-
----
-
-## ⭐ Support
-
-If you find ElectraN8 useful, consider giving the repository a ⭐ on GitHub.
-
-**ElectraN8 — Vote Smart. Vote Fair.**
+This project is developed for educational and academic purposes.
